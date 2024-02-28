@@ -4,7 +4,7 @@
 using namespace std;
 
 #define _USE_MATH_DEFINES
-//#define SQRT3
+#define SQRT3
 
 namespace CGL
 {
@@ -480,7 +480,7 @@ namespace CGL
      
 
       HalfedgeIter h = v->halfedge();
-       v->position = (1.0/3.0)*(h->next()->vertex()->position + h->next()->next()->vertex()->position + h->twin()->next()->next()->vertex()->position);
+       v->position = (1.0/3.0)*(h->next()->vertex()->newPosition + h->next()->next()->vertex()->newPosition + h->twin()->next()->next()->vertex()->newPosition);
        v->isNew = true;
       EdgeIter e0 = h->next()->edge();
       EdgeIter e1 = h->next()->next()->twin()->next()->edge();   

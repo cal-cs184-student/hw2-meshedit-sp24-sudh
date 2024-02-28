@@ -441,6 +441,13 @@ namespace CGL
     for(FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); ++f){
       f->isNew = false;
     }
+    for(VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); ++v){
+      v->isNew = false;
+    }
+    for(EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); ++e){
+      e->isNew = false;
+    }
+
 
     //now follow the same steps recommended for the bisection splitting -- lets start with assigning new positions to existing vertices
     for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); ++v) {
@@ -463,14 +470,7 @@ namespace CGL
 		}
 
       //next the edges
-      for (EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); ++e) {
-        HalfedgeIter h = e->halfedge();
-			VertexIter v0= h->vertex();
-			  VertexIter v1 = h->twin()->vertex();
-        VertexIter v2 = h->next()->next()->vertex();
-			  VertexIter v3 = h->twin()->next()->next()->vertex();
-			  e->newPosition = 0.5* (v0->position + v1->position) ;
-		}
+  
 
     //now call addCentroid on each face, and mark the new edges and vertices
     std::vector<EdgeIter> old_edges;
@@ -480,7 +480,7 @@ namespace CGL
      
 
       HalfedgeIter h = v->halfedge();
-       v->position = (1.0/3.0)*(h->next()->vertex()->newPosition + h->next()->next()->vertex()->newPosition + h->twin()->next()->next()->vertex()->newPosition);
+       v->position = (1.0/3.0)*(h->next()->vertex()->position + h->next()->next()->vertex()->position + h->twin()->next()->next()->vertex()->position);
        v->isNew = true;
       EdgeIter e0 = h->next()->edge();
       EdgeIter e1 = h->next()->next()->twin()->next()->edge();   
@@ -491,6 +491,9 @@ namespace CGL
       e3->isNew = true;
       e4->isNew = true;
       e5->isNew = true;
+      old_edges.push_back(e0);
+      old_edges.push_back(e1);
+      old_edges.push_back(e2);
       //now set faces to be new
       FaceIter f0 = h->face();
       FaceIter f1 = h->twin()->face();
@@ -498,9 +501,6 @@ namespace CGL
       f0->isNew = true;
       f1->isNew = true;
       f2->isNew = true;
-      old_edges.push_back(e0);
-      old_edges.push_back(e1);
-      old_edges.push_back(e2);
       }
   
 
@@ -522,14 +522,26 @@ namespace CGL
     //Then flip the original edges
 
     #else 
+    for(FaceIter f = mesh.facesBegin(); f != mesh.facesEnd(); ++f){
+      f->isNew = false;
+    }
+    for(VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); ++v){
+      v->isNew = false;
+    }
+    for(EdgeIter e = mesh.edgesBegin(); e != mesh.edgesEnd(); ++e){
+      e->isNew = false;
+    }
       for (VertexIter v = mesh.verticesBegin(); v != mesh.verticesEnd(); ++v) {
 			int n = v->degree();
       //need to add one for boundray edges
       if(v->isBoundary()) {
         n = n + 1;
         v->newPosition = (3.0/4.0)*v->position;
-        v->newPosition = v->newPosition + (1.0/8.0)*v->halfedge()->twin()->vertex()->position;
-        v->newPosition = v->newPosition + (1.0/8.0)*v->halfedge()->twin()->next()->twin()->vertex()->position;
+       
+          v->newPosition = v->newPosition + (1.0/8.0)*v->halfedge()->next()->next()->vertex()->position;
+          v->newPosition = v->newPosition + (1.0/8.0)*v->halfedge()->twin()->next()->vertex()->position;
+       
+        
 
       } else {
         double u = n == 3 ?  3.0/ 16.0 : 3.0/(8.0 * static_cast<double>(n));

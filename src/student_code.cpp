@@ -4,7 +4,7 @@
 using namespace std;
 
 #define _USE_MATH_DEFINES
-#define SQRT3
+//#define SQRT3
 
 namespace CGL
 {

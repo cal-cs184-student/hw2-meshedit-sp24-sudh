@@ -368,6 +368,8 @@ namespace CGL
           */
          HalfedgeCIter halfedge( void ) const { return _halfedge; }
 
+         bool isNew;
+
          /**
           * returns the number of edges (or equivalently, vertices) of this face
           */
@@ -629,7 +631,7 @@ namespace CGL
           */
            EdgeIter       flipEdge( EdgeIter e ); ///< flip an edge, returning a pointer to the flipped edge
          VertexIter      splitEdge( EdgeIter e ); ///< split an edge, returning a pointer to the inserted midpoint vertex; the halfedge of this vertex should refer to one of the edges in the original mesh
-
+         VertexIter         AddCentroid(FaceIter f); ///< add centroid to face
 
          void check_for(HalfedgeIter h) {
           for (HalfedgeIter he = halfedgesBegin(); he != halfedgesEnd(); he++) {
